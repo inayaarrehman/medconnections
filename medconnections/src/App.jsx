@@ -75,6 +75,8 @@ export default function App() {
           isDaily={isDaily}
           progressKey={progressKey}
           headerLabel={headerLabel}
+          dailyNumber={todayDayNumber}
+          dailyStreak={stats.currentStreak}
           onExit={goHome}
           onFinish={handleFinish}
         />
@@ -89,6 +91,7 @@ export default function App() {
         dailyIndex={dailyIndex}
         dailyNumber={todayDayNumber}
         dailyDone={dailyDone}
+        currentStreak={stats.currentStreak}
         practiceStatus={practiceStatus}
         onPlayDaily={openDaily}
         onPlayPractice={openPractice}

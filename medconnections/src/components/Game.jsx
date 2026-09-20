@@ -1,13 +1,14 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { DIFFICULTY } from '../puzzles.js'
-import { buildTiles, isFullMatch, isOneAway, shuffle, MAX_MISTAKES } from '../utils/game.js'
+import { buildTiles, isFullMatch, isOneAway, shuffle, MAX_MISTAKES, STREAK_MILESTONES } from '../utils/game.js'
 import { loadProgress, saveProgress } from '../utils/storage.js'
 import Confetti from './Confetti.jsx'
+import ReviewConnections from './ReviewConnections.jsx'
 
 const levelColor = (level) => DIFFICULTY.find((d) => d.level === level)?.color || '#888'
 const levelEmoji = { 1: '🟨', 2: '🟩', 3: '🟦', 4: '🟪' }
 
-export default function Game({ puzzle, isDaily, progressKey, headerLabel, onExit, onFinish }) {
+export default function Game({ puzzle, isDaily, progressKey, headerLabel, dailyNumber, dailyStreak, onExit, onFinish }) {
   const initial = useMemo(() => {
     const saved = loadProgress(progressKey)
     if (saved && saved.puzzleId === puzzle.id) return saved
@@ -34,6 +35,7 @@ export default function Game({ puzzle, isDaily, progressKey, headerLabel, onExit
   const [message, setMessage] = useState('')
   const [popCatIndex, setPopCatIndex] = useState(null)
   const [copied, setCopied] = useState(false)
+  const [showReview, setShowReview] = useState(false)
   const finishReported = useRef(false)
   const msgTimer = useRef(null)
 
@@ -141,14 +143,20 @@ export default function Game({ puzzle, isDaily, progressKey, headerLabel, onExit
 
   const mistakesLeft = MAX_MISTAKES - mistakes
 
+  const isMilestone = isDaily && won && STREAK_MILESTONES.includes(dailyStreak)
+
+  const resultGridText = useMemo(
+    () => guessLog.map((g) => g.levels.map((lv) => levelEmoji[lv]).join('')).join('\n'),
+    [guessLog]
+  )
+
   const shareText = useMemo(() => {
-    const rows = guessLog
-      .map((g) => g.levels.map((lv) => levelEmoji[lv]).join(''))
-      .join('\n')
-    const label = isDaily ? `MedConnections ${headerLabel}` : `MedConnections — ${puzzle.title}`
-    const result = won ? 'Solved it' : 'So close'
-    return `${label}\n${result} (${mistakes}/${MAX_MISTAKES} mistakes)\n${rows}`
-  }, [guessLog, isDaily, headerLabel, puzzle.title, won, mistakes])
+    const label = isDaily
+      ? `Medical Connections #${String(dailyNumber ?? '').padStart(3, '0')}`
+      : `Medical Connections — ${puzzle.title}`
+    const streakLine = isDaily && won && dailyStreak > 0 ? `\n🔥 ${dailyStreak} day streak` : ''
+    return `${label}\n${resultGridText}${streakLine}`
+  }, [isDaily, dailyNumber, puzzle.title, resultGridText, won, dailyStreak])
 
   const handleShare = async () => {
     try {
@@ -191,7 +199,7 @@ export default function Game({ puzzle, isDaily, progressKey, headerLabel, onExit
             style={{ backgroundColor: levelColor(c.level) }}
           >
             <div className="solved-banner-title">{c.title}</div>
-            <div className="solved-banner-items">{c.items.join(', ')}</div>
+            <div className="solved-banner-items">{c.items.map((it) => it.term).join(', ')}</div>
           </div>
         ))}
       </div>
@@ -231,21 +239,43 @@ export default function Game({ puzzle, isDaily, progressKey, headerLabel, onExit
       {gameOver && (
         <div className="result-card">
           {won && <Confetti />}
-          <h2>{won ? '🎉 Solved!' : 'Puzzle over'}</h2>
-          <p>
+          <h2>{isDaily ? "Today's Results" : 'Puzzle Results'}</h2>
+
+          <div className="result-grid" aria-hidden="true">
+            {guessLog.map((g, i) => (
+              <div className="result-grid-row" key={i}>
+                {g.levels.map((lv, j) => (
+                  <span key={j} className="result-square" style={{ backgroundColor: levelColor(lv) }} />
+                ))}
+              </div>
+            ))}
+          </div>
+
+          <p className="result-summary">
             {won
-              ? `You got it in ${mistakes} mistake${mistakes === 1 ? '' : 's'}.`
-              : 'Here are the groups you missed — check them out below.'}
+              ? `Solved with ${mistakes} mistake${mistakes === 1 ? '' : 's'}.`
+              : 'Out of guesses — here are the groups you missed.'}
           </p>
-          <div className="share-row">
-            <pre className="share-preview">{shareText}</pre>
+
+          {isDaily && dailyStreak > 0 && (
+            <div className={`streak-banner ${isMilestone ? 'milestone' : ''}`}>
+              🔥 {dailyStreak} day streak{isMilestone ? '!' : ''}
+            </div>
+          )}
+
+          <div className="result-actions">
             <button className="primary-btn" onClick={handleShare}>
-              {copied ? 'Copied!' : 'Copy results'}
+              {copied ? 'Copied!' : 'Share Results'}
+            </button>
+            <button className="secondary-btn" onClick={() => setShowReview((v) => !v)}>
+              {showReview ? 'Hide Review' : 'Review Connections'}
+            </button>
+            <button className="secondary-btn" onClick={onExit}>
+              Keep Playing
             </button>
           </div>
-          <button className="secondary-btn" onClick={onExit}>
-            Back to home
-          </button>
+
+          {showReview && <ReviewConnections puzzle={puzzle} />}
         </div>
       )}
     </div>

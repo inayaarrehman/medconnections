@@ -34,12 +34,15 @@ export function shuffle(array) {
 export function buildTiles(puzzle) {
   const tiles = []
   puzzle.categories.forEach((cat, catIndex) => {
-    cat.items.forEach((text) => {
-      tiles.push({ text, level: cat.level, catIndex })
+    cat.items.forEach((item) => {
+      tiles.push({ text: item.term, level: cat.level, catIndex })
     })
   })
   return shuffle(tiles)
 }
+
+// Milestone streak lengths worth a special callout.
+export const STREAK_MILESTONES = [7, 30, 50, 100]
 
 // Given the currently-selected tiles (array of tile objects), determine if
 // they all share the same catIndex.
