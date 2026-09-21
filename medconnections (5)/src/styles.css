@@ -1,0 +1,1629 @@
+/* ---------------------------------------------------------------------
+   Visual identity — editorial, restrained, "designed by a human."
+   Neutral shell (near-black text on warm off-white, muted secondary
+   text, thin gray dividers, square-ish elements) so the medical content
+   and the puzzle board carry the personality instead of cards, pills,
+   gradients and badges. Outside of gameplay, color is used sparingly —
+   the four difficulty colors are the one deliberate splash, and they
+   only appear inside the puzzle itself.
+   --------------------------------------------------------------------- */
+:root {
+  --bg: #faf9f6;
+  --bg-elevated: #ffffff;
+  --border: #e2e0da;
+  --text: #17160f;
+  --text-dim: #6b6960;
+  --accent: #1f6f5c;
+  --accent-ink: #ffffff;
+  --radius: 8px;
+
+  /* Original 4-tier difficulty palette — coral/sage/cobalt/plum, not NYT's
+     yellow/green/blue/purple. Lives inside the puzzle board only; the
+     shell around it stays neutral. These exact hexes are kept in sync
+     with src/data/constants.js's DIFFICULTY.color (used for solved-banner
+     and result-square fills via inline style) — both are contrast-checked
+     at 4.5:1+ against the fixed white text/glyph shown on top of them. */
+  --difficulty-easy: #bb4c34;
+  --difficulty-medium: #227a5d;
+  --difficulty-hard: #3568c4;
+  --difficulty-expert: #8c4fc2;
+  --difficulty-easy-ink: #fff6f3;
+  --difficulty-medium-ink: #f3fff9;
+  --difficulty-hard-ink: #f3f7ff;
+  --difficulty-expert-ink: #faf3ff;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #17160f;
+    --bg-elevated: #201e15;
+    --border: #35331f;
+    --text: #f3f1e9;
+    --text-dim: #9a9686;
+    --accent: #4fb99e;
+    --accent-ink: #0e2620;
+    color-scheme: dark;
+
+    /* Lighter tints for the few places a difficulty color is used as TEXT
+       on the page background (labels, sub-headings) rather than as a
+       solid fill with fixed white text — the darker light-mode hexes
+       above don't clear 4.5:1 against the dark background, these do. */
+    --difficulty-easy: #f0836a;
+    --difficulty-medium: #4fbf9a;
+    --difficulty-hard: #7ea6ee;
+    --difficulty-expert: #c491ea;
+  }
+}
+
+/* Visible keyboard focus everywhere — never suppressed. A 2px accent
+   outline with an offset so it stays legible against every difficulty
+   color, both themes, and small touch targets. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Respect the OS-level "reduce motion" preference: every gameplay/
+   celebration animation in this file (pop-in, shake, brand-mark, confetti)
+   is disabled rather than merely shortened, per the accessibility
+   requirement — the game stays fully playable with zero animation. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.4;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.app-shell {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 18px 18px 60px;
+  min-height: 100vh;
+}
+
+/* Comfortable one-handed tap targets everywhere. */
+button {
+  min-height: 40px;
+  font-family: inherit;
+}
+
+/* ---------- Primary navigation ---------- */
+
+.app-nav {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 22px;
+  padding-bottom: 2px;
+}
+
+.app-nav-item {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-dim);
+  font-size: 0.86rem;
+  font-weight: 600;
+  padding: 8px 10px;
+  cursor: pointer;
+  min-height: 36px;
+}
+
+.app-nav-item.active {
+  color: var(--text);
+  border-bottom-color: var(--text);
+}
+
+.app-nav-item:hover {
+  color: var(--text);
+}
+
+@media (max-width: 380px) {
+  .app-nav-item {
+    padding: 8px 6px;
+    font-size: 0.8rem;
+  }
+}
+
+/* ---------- Home ---------- */
+
+.home-topbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-bottom: 4px;
+}
+
+.home-topbar-link {
+  padding: 6px 0;
+  font-size: 0.82rem;
+}
+
+.home-section {
+  padding: 22px 0;
+}
+
+.home-section + .home-section {
+  border-top: 1px solid var(--border);
+}
+
+.home-hero-section {
+  padding-top: 8px;
+}
+
+.home-title {
+  font-size: 1.7rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0 0 6px;
+}
+
+.home-meta {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.home-tagline {
+  color: var(--text-dim);
+  font-size: 1.05rem;
+  margin: 4px 0 18px;
+}
+
+.home-done-line {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 4px 0 0;
+}
+
+.home-section-heading {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.home-row-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0 0 2px;
+}
+
+.home-row-sub {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  margin: 0 0 12px;
+}
+
+.home-link {
+  padding: 0;
+  text-align: left;
+}
+
+/* ---------- Archive / Review ---------- */
+
+.section-sub {
+  color: var(--text-dim);
+  font-size: 0.88rem;
+  margin: 0 0 16px;
+}
+
+.archive-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.archive-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  padding: 14px 2px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.92rem;
+}
+
+.archive-row:hover {
+  color: var(--accent);
+}
+
+.archive-row-done {
+  opacity: 0.9;
+}
+
+.archive-row-date {
+  font-weight: 600;
+}
+
+.archive-row-status {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.archive-row-status.won {
+  color: var(--difficulty-medium);
+}
+
+.archive-row-status.lost {
+  color: var(--difficulty-easy);
+}
+
+.archive-row-status.not-played {
+  color: var(--accent);
+}
+
+/* ---------- Systems Library ---------- */
+
+.mini-progress-track {
+  flex: 1;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--border);
+  overflow: hidden;
+  min-width: 40px;
+}
+
+.mini-progress-fill {
+  height: 100%;
+  background: var(--text-dim);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.system-compact-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.system-row {
+  display: grid;
+  grid-template-columns: 1fr 90px 44px;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  padding: 14px 2px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.94rem;
+  min-height: 48px;
+}
+
+.system-row:hover:not(:disabled) {
+  color: var(--accent);
+}
+
+.system-row:disabled {
+  cursor: default;
+}
+
+.system-row-name {
+  font-weight: 600;
+}
+
+.system-row-count {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.system-row-soon {
+  grid-column: 2 / span 2;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  text-align: right;
+}
+
+.system-row-empty {
+  opacity: 0.5;
+}
+
+.system-detail {
+  padding: 8px 0 24px;
+}
+
+.system-detail-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.system-detail-count {
+  color: var(--text-dim);
+  font-size: 0.95rem;
+  margin: 0 0 10px;
+}
+
+.system-detail .mini-progress-track {
+  height: 4px;
+  margin-bottom: 18px;
+}
+
+.system-play-btn {
+  padding: 12px 28px;
+}
+
+.system-play-notice {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  max-width: 320px;
+  margin: 0 0 10px;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  text-decoration: underline;
+  font: inherit;
+  cursor: pointer;
+}
+
+.your-system {
+  border-top: 1px solid var(--border);
+  padding-top: 18px;
+}
+
+.your-system-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 10px;
+}
+
+.your-system-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-dim);
+}
+
+.your-system-label.strong {
+  color: var(--difficulty-medium);
+}
+
+.your-system-label.needs-work {
+  color: var(--difficulty-hard);
+}
+
+.your-system-values {
+  font-size: 0.9rem;
+}
+
+/* ---------- Dev Viewer (hidden #dev route; not user-facing) ---------- */
+
+.dev-viewer {
+  max-width: 960px;
+}
+
+.dev-heading {
+  margin: 0 0 4px;
+  font-size: 1.4rem;
+}
+
+.dev-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 14px 0 10px;
+}
+
+.dev-tab {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.dev-tab.active {
+  color: var(--accent-ink);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.dev-filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.dev-filters select {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 0.82rem;
+}
+
+.bank-difficulty-badge {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(31, 111, 92, 0.12);
+  color: var(--accent);
+}
+
+.dev-category-sub {
+  font-size: 0.76rem;
+  color: var(--text-dim);
+  margin: -2px 0 8px;
+  font-family: 'SFMono-Regular', Consolas, monospace;
+}
+
+.dev-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+@media (max-width: 720px) {
+  .dev-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dev-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.dev-list-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.8rem;
+}
+
+.dev-list-row.active {
+  border-color: var(--accent);
+}
+
+.dev-list-title {
+  color: var(--text-dim);
+  font-size: 0.76rem;
+}
+
+.dev-main {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.dev-detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-bottom: 14px;
+}
+
+.dev-status {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--border);
+  color: var(--text-dim);
+}
+
+.dev-status-draft {
+  background: rgba(198, 90, 65, 0.16);
+  color: var(--difficulty-easy);
+}
+
+.dev-status-needs_review {
+  background: rgba(181, 121, 10, 0.16);
+  color: #9a6a08;
+}
+
+.dev-status-reviewed {
+  background: rgba(181, 121, 10, 0.16);
+  color: #9a6a08;
+}
+
+.dev-status-published,
+.dev-status-verified {
+  background: rgba(47, 128, 104, 0.16);
+  color: var(--difficulty-medium);
+}
+
+.dev-status-rejected {
+  background: rgba(198, 90, 65, 0.16);
+  color: var(--difficulty-easy);
+}
+
+.dev-errors {
+  background: rgba(198, 90, 65, 0.08);
+  border: 1px solid rgba(198, 90, 65, 0.35);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.82rem;
+  margin-bottom: 14px;
+}
+
+.dev-errors ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+
+.dev-categories {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dev-category {
+  border-left: 4px solid var(--border);
+  padding-left: 12px;
+}
+
+.dev-category-title {
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.dev-json-input {
+  width: 100%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 12px;
+  font-family: 'SFMono-Regular', Consolas, monospace;
+  font-size: 0.8rem;
+  resize: vertical;
+}
+
+.dev-parse-error {
+  color: var(--difficulty-easy);
+  font-size: 0.85rem;
+}
+
+/* ---------- Buttons ---------- */
+
+.primary-btn {
+  background: var(--text);
+  color: var(--bg);
+  border: none;
+  border-radius: var(--radius);
+  padding: 12px 22px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: opacity 0.12s ease, transform 0.08s ease;
+}
+
+.primary-btn:hover {
+  opacity: 0.85;
+}
+
+.primary-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.secondary-btn {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 11px 18px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.secondary-btn:hover {
+  border-color: var(--text);
+}
+
+.secondary-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 8px 10px;
+  border-radius: 6px;
+}
+
+.icon-btn.ghost {
+  border: 1px solid var(--border);
+}
+
+.icon-btn:hover {
+  background: rgba(23, 22, 15, 0.05);
+}
+
+.icon-btn:active,
+.primary-btn:active,
+.secondary-btn:active {
+  transform: scale(0.97);
+}
+
+.text-link {
+  display: block;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 4px 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.text-link:hover {
+  color: var(--accent);
+}
+
+/* ---------- Game header ---------- */
+
+.game-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  gap: 10px;
+}
+
+/* On a narrow phone, a long header label (e.g. "Biochemistry/Genetics")
+   must never push the back button or mistakes dots off-screen and cause
+   horizontal scroll — min-width: 0 lets this flex child actually shrink,
+   with the label itself ellipsizing instead of wrapping/overflowing. */
+.game-header-title {
+  font-weight: 600;
+  color: var(--text-dim);
+  font-size: 0.88rem;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.game-header .icon-btn {
+  flex-shrink: 0;
+}
+
+.mistakes-indicator {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot-live {
+  background: var(--text);
+}
+
+.dot-spent {
+  background: var(--border);
+}
+
+.toast {
+  position: sticky;
+  top: 8px;
+  z-index: 5;
+  text-align: center;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 14px;
+  border-radius: var(--radius);
+  width: fit-content;
+  margin: 0 auto 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(23, 22, 15, 0.06);
+  animation: fadeInDown 0.2s ease;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- Solved banners ---------- */
+
+.solved-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.solved-banner {
+  border-radius: 10px;
+  padding: 14px;
+  color: #ffffff;
+  text-align: center;
+}
+
+.solved-banner.pop {
+  animation: popIn 0.4s ease;
+}
+
+/* A slightly more satisfying flourish reserved for the Expert (purple)
+   category — restrained: a soft glow, not confetti/coins. */
+.solved-banner.pop-expert {
+  animation: popInExpert 0.55s ease;
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.03);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes popInExpert {
+  0% {
+    transform: scale(0.88);
+    opacity: 0;
+    box-shadow: 0 0 0 0 rgba(124, 74, 168, 0.5);
+  }
+  55% {
+    transform: scale(1.05);
+    opacity: 1;
+    box-shadow: 0 0 0 10px rgba(124, 74, 168, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(124, 74, 168, 0);
+  }
+}
+
+.solved-banner-title {
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+
+.solved-banner-items {
+  font-size: 0.85rem;
+  margin-top: 2px;
+  font-weight: 500;
+}
+
+/* ---------- Tile grid ---------- */
+
+/* The one place visual energy is allowed to live: a real 4x4 board, on
+   phones too — tiles shrink, the grid shape doesn't. Real elevation, a
+   press/compression animation, and an unmistakable selected state. */
+.tile-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 10px 0 18px;
+}
+
+@media (max-width: 420px) {
+  .tile-grid {
+    gap: 6px;
+  }
+}
+
+.tile {
+  background: var(--bg-elevated);
+  border: 1.5px solid var(--border);
+  border-top-width: 3px;
+  color: var(--text);
+  border-radius: 12px;
+  padding: 8px 6px;
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  /* Scales down for long medical terms (e.g. "Hypertrophic cardiomyopathy")
+     without ever shrinking so far it's hard to read — clamp() picks a
+     size proportional to the viewport within a readable floor/ceiling,
+     and wrapping (not truncation) handles the rest. */
+  font-size: clamp(0.72rem, 2.6vw, 0.92rem);
+  font-weight: 600;
+  cursor: pointer;
+  line-height: 1.25;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  box-shadow: 0 1px 0 rgba(23, 22, 15, 0.04);
+  transition: transform 0.1s ease, background 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+/* A very subtle geometry variation across the grid — alternating corner
+   radius — purely decorative texture, never information-bearing (which
+   tile is which category is never hinted at before it's solved). */
+.tile:nth-child(4n+1),
+.tile:nth-child(4n+4) {
+  border-radius: 14px;
+}
+.tile:nth-child(4n+2),
+.tile:nth-child(4n+3) {
+  border-radius: 10px;
+}
+
+@media (min-width: 421px) {
+  .tile {
+    font-size: clamp(0.8rem, 1.6vw, 0.95rem);
+    padding: 14px 8px;
+    min-height: 80px;
+  }
+}
+
+.tile:hover {
+  border-color: var(--text-dim);
+  transform: translateY(-1px);
+}
+
+.tile:active {
+  transform: scale(0.95);
+}
+
+/* Selection is never color-only: an accent top border plus a small filled
+   dot in the corner accompany the inverted fill, so the state also reads
+   correctly if the invert itself is hard to distinguish. */
+.tile-selected {
+  background: var(--text);
+  color: var(--bg);
+  border-color: var(--accent);
+  border-top-color: var(--accent);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(23, 22, 15, 0.16);
+  position: relative;
+}
+
+.tile-selected::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.tile-selected:active {
+  transform: scale(0.95);
+}
+
+.tile-shake {
+  animation: shake 0.4s ease;
+}
+
+@keyframes shake {
+  10%, 90% { transform: translateX(-2px); }
+  20%, 80% { transform: translateX(4px); }
+  30%, 50%, 70% { transform: translateX(-8px); }
+  40%, 60% { transform: translateX(8px); }
+}
+
+.game-controls {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ---------- Result card ---------- */
+
+.result-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.result-card h2 {
+  margin-top: 0;
+}
+
+.result-grid {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 6px 0 14px;
+}
+
+.result-grid-row {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
+
+.result-square {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  color: #fff;
+  line-height: 1;
+}
+
+.result-summary {
+  color: var(--text-dim);
+  font-size: 0.92rem;
+  margin: 0 0 6px;
+}
+
+.streak-banner {
+  font-size: 0.92rem;
+  color: var(--text-dim);
+  margin: 6px 0 14px;
+  font-weight: 600;
+}
+
+.streak-banner.milestone {
+  color: var(--text);
+  font-size: 1rem;
+}
+
+/* ---------- Completion moment (brand mark + rotating phrase) ---------- */
+
+.result-brandmark {
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.brand-mark-animate {
+  animation: brandMarkIn 0.6s ease;
+}
+
+@keyframes brandMarkIn {
+  0% { transform: scale(0.6) rotate(-8deg); opacity: 0; }
+  60% { transform: scale(1.08) rotate(2deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.completion-phrase {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 2px 0 10px;
+  letter-spacing: 0.01em;
+}
+
+.result-card-perfect .completion-phrase {
+  color: var(--accent);
+}
+
+/* Solved groups compress slightly closer together once the puzzle is
+   fully resolved — a small, deliberate acknowledgment that the board is
+   "done," distinct from any confetti/trophy-style celebration. */
+.solved-stack-complete .solved-banner {
+  transition: margin 0.3s ease;
+}
+
+.solved-stack-complete {
+  gap: 4px;
+}
+
+.daily-micro-stat {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  margin: -4px 0 14px;
+}
+
+.connection-of-day {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  text-align: left;
+}
+
+.connection-of-day-heading {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  margin: 0 0 6px;
+}
+
+.connection-of-day-title {
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.connection-of-day-explanation {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* ---------- Difficulty shape glyphs (never color alone) ---------- */
+
+.difficulty-shape {
+  display: inline-block;
+  margin-right: 6px;
+  font-size: 0.85em;
+  opacity: 0.9;
+}
+
+/* ---------- Knowledge signal ("Knew it" / "Review later") ---------- */
+
+.knowledge-signal-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.knowledge-signal-label {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.chip-btn {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 0.78rem;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.chip-btn-active {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+
+.result-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+/* ---------- Review / accordion ---------- */
+
+.review-panel {
+  margin-top: 20px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.accordion-item {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.accordion-header {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-left: 4px solid transparent;
+  color: var(--text);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.92rem;
+}
+
+.accordion-level {
+  font-weight: 700;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.accordion-title {
+  flex: 1;
+  font-weight: 600;
+}
+
+.accordion-caret {
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.accordion-body {
+  padding: 4px 16px 16px;
+}
+
+.accordion-explanation {
+  color: var(--text-dim);
+  font-size: 0.88rem;
+  margin: 0 0 10px;
+}
+
+.accordion-item-list {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.accordion-item-list li {
+  font-size: 0.86rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.accordion-item-list strong {
+  color: var(--text);
+}
+
+.accordion-item-list span {
+  color: var(--text-dim);
+}
+
+.remember-line {
+  background: rgba(31, 111, 92, 0.07);
+  border-left: 3px solid var(--accent);
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.remember-label {
+  display: block;
+  font-weight: 700;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+  margin-bottom: 3px;
+}
+
+/* ---------- Modal ---------- */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 9, 5, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 16px;
+}
+
+.modal {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  max-width: 440px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.howto-list {
+  padding-left: 18px;
+  line-height: 1.6;
+  color: var(--text-dim);
+}
+
+.pill {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 0.78rem;
+  color: #fff;
+}
+
+.pill-1 { background: var(--difficulty-easy); }
+.pill-4 { background: var(--difficulty-expert); }
+
+/* ---------- Stats ---------- */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.stat-box {
+  text-align: center;
+  padding: 10px 4px;
+  border-right: 1px solid var(--border);
+}
+
+.stat-box:last-child {
+  border-right: none;
+}
+
+.stat-num {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.stat-label {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+
+.stats-subhead {
+  font-size: 0.95rem;
+  margin: 0 0 8px;
+}
+
+.dist-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dist-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dist-row-label {
+  width: 14px;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+
+.dist-bar-track {
+  flex: 1;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.dist-bar-fill {
+  background: var(--text-dim);
+  min-width: 20px;
+  padding: 4px 8px;
+  color: var(--bg);
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-radius: 4px;
+}
+
+/* ---------- Confetti (Daily Puzzle win only) ---------- */
+
+.confetti-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.confetti-piece {
+  position: absolute;
+  top: -10px;
+  border-radius: 2px;
+  animation-name: fall;
+  animation-timing-function: ease-in;
+  animation-fill-mode: forwards;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(320px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* ---------- 5-Minute Challenge ---------- */
+
+.challenge {
+  display: flex;
+  flex-direction: column;
+}
+
+.challenge-intro,
+.challenge-results {
+  align-items: flex-start;
+  padding: 24px 0;
+}
+
+.challenge-title,
+.challenge-results-heading {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 10px;
+}
+
+.challenge-lede {
+  font-size: 1.05rem;
+  margin: 0 0 6px;
+}
+
+.challenge-mixes {
+  color: var(--text-dim);
+  font-size: 0.88rem;
+  margin: 0 0 16px;
+}
+
+.challenge-best {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  margin: 0 0 20px;
+}
+
+.challenge-start-btn {
+  margin-bottom: 16px;
+}
+
+.challenge-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.challenge-timer {
+  font-size: 1.3rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.challenge-timer.urgent {
+  font-size: 1.6rem;
+  color: var(--difficulty-easy);
+}
+
+.challenge-live-score {
+  font-size: 1.3rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.challenge-multiplier {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin-left: 6px;
+}
+
+.challenge-anchor {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.challenge-prompt {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  margin: 0 0 4px;
+}
+
+.challenge-tile-grid {
+  margin-top: 12px;
+}
+
+.challenge-submit-btn {
+  display: block;
+  margin: 4px auto 0;
+}
+
+.challenge-choice-list {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+}
+
+.challenge-choice {
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  text-align: left;
+  padding: 14px 4px;
+  font-size: 0.98rem;
+  cursor: pointer;
+}
+
+.challenge-choice:hover:not(:disabled) {
+  color: var(--accent);
+}
+
+.challenge-choice:disabled {
+  cursor: default;
+}
+
+.challenge-choice.is-correct {
+  color: var(--difficulty-medium);
+  font-weight: 700;
+}
+
+.challenge-choice.is-incorrect {
+  color: var(--difficulty-easy);
+  text-decoration: line-through;
+}
+
+.challenge-shown {
+  margin-bottom: 6px;
+}
+
+.challenge-shown-item {
+  font-size: 1.02rem;
+  font-weight: 600;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.challenge-final-score {
+  font-size: 2.4rem;
+  font-weight: 800;
+  margin-bottom: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.challenge-new-best {
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 18px;
+}
+
+.challenge-results-line {
+  color: var(--text-dim);
+  font-size: 0.92rem;
+  margin: 2px 0;
+}
+
+.challenge-results-label {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.challenge-results-actions {
+  display: flex;
+  gap: 10px;
+  margin: 18px 0 8px;
+  flex-wrap: wrap;
+}
+
+.challenge-review-misses {
+  width: 100%;
+  margin: 10px 0 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.challenge-miss-item {
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+
+.challenge-miss-tag {
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  margin-bottom: 4px;
+}
+
+.challenge-miss-text {
+  font-size: 0.92rem;
+  margin-bottom: 4px;
+}
+
+.challenge-miss-explanation {
+  color: var(--text-dim);
+  font-size: 0.88rem;
+  margin: 0 0 4px;
+}
+
+.challenge-miss-note {
+  color: var(--text-dim);
+  font-size: 0.76rem;
+  margin: 0;
+}
